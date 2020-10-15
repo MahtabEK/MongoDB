@@ -46,3 +46,53 @@ The following reference page gives the different operators that can be used in q
 https://docs.mongodb.com/v4.2/reference/operator/query/
 
 
+If you find the output of your queries hard to read, you can append .pretty() to them to produce indented output.
+
+**You can find a file called queries.js that contains a query for each of the folowwing questions:**
+
+1) Retrieve all tweets that are replying to the user with screen name “globeandmail”
+
+2) Retrieve all tweets made by the user with screen name “MLHealthUnit”
+
+**You can find a file called aggregations.js that contains a query for each of the following questions, using the MongoDB aggregation framework.**
+
+Aggregations in MongoDB are summaries of a collection. They are similar in concept to the operations performed in a MapReduce. MongoDB aggregations are more restrictive than MapReduce, but their implementation is very efficient. See the following documents for details.
+
+https://docs.mongodb.com/v4.2/core/aggregation-introduction/
+
+https://docs.mongodb.com/manual/reference/operator/aggregation/
+
+3) Produce a list of users, together with the total number of times they tweeted, sorted in decreasing order.
+
+4) Produce a list of place names, together with the total number of tweets from that place name, sorted in decreasing order.
+
+5) Produce a list of users, together with the total number of replies to that user, sorted in decreasing order.
+
+6) Produce a list of users, together with the total number of hashtags used by that user, sorted in decreasing order.
+
+**You can find a file called mapreduce.js that provides a mapper, reducer, and mongodb query to answer the question below.**
+
+Because the aggregation model cannot handle all types of summaries, MongoDB also provides a mechanism for MapReduce computations. The syntax is somewhat simpler than python and hadoop; here is an example:.
+
+****
+function myMapper() {
+    //The mapper function is called with each document, which has the special name 'this'
+    //Emit a key-value pair:
+    emit(this.user.screen_name, 1);
+}
+
+function myReducer(key, values) {
+    //The reducer is called once for each key, and is passed an array
+    //containing all values corresponding to that key.
+    //Produce the desired result
+    return Array.sum( values );
+}
+
+db.tweets.mapReduce(myMapper, myReducer, { query: {}, out: "mroutput" })
+db.mroutput.aggregate({$sort: {value: -1}})
+
+****
+
+Note that the output of the MapReduce has been placed in a new collection called mroutput, which is then queried to get the top answers. (This collection can be given any name.)
+
+7) Produce a new collection that contains each hashtag used in the collection of tweets, along with the number of times that hashtag was used.
